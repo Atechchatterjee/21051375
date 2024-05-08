@@ -57,17 +57,32 @@ app.get(
     const companyNames = ["AMZ", "FLP", "MYN", "AZO"];
     try {
       let allProducts = [];
+      let retries = 5; // number of retries allowed to refetch bearer token
 
       for (const companyName of companyNames) {
-        const res = await axios.get(
-          `http://20.244.56.144/test/companies/${companyName}/categories/${categoryname}/products?top=${n}&minPrice=${minprice}&maxPrice=${maxprice}`,
-          {
-            headers: {
-              Authorization: `Bearer ${bearerToken}`,
-            },
+        while (retries > 0) {
+          try {
+            const res = await axios.get(
+              `http://20.244.56.144/test/companies/${companyName}/categories/${categoryname}/products?top=${n}&minPrice=${minprice}&maxPrice=${maxprice}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${bearerToken}`,
+                },
+              }
+            );
+            allProducts.push(...res.data);
+          } catch (err) {
+            try {
+              await refetchBearerToken();
+              break;
+            } catch (err) {
+              setTimeout(async () => {
+                await refetchBearerToken();
+                retries--;
+              }, 5000);
+            }
           }
-        );
-        allProducts.push(...res.data);
+        }
       }
 
       allProducts.sort((i, j) => i.rating - j.rating);
