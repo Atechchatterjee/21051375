@@ -1,4 +1,5 @@
 "use client";
+import { Card } from "@/components/ui/card";
 import { useEffect, useState } from "react";
 
 export default function Product({ params }: any) {
@@ -15,5 +16,14 @@ export default function Product({ params }: any) {
   }
   useEffect(() => {}, []);
 
-  return <>{JSON.stringify(product, null, 2)}</>;
+  return (
+    <div className="w-[70%] m-auto">
+      <Card className="flex gap-5 p-3 mt-[5rem]">
+        <h3 className="font-bold text-xl">{product.productName}</h3>
+        <p>Price: {product.price}</p>
+        <p>rating: {product.rating}</p>
+        <p>discount: {product.discount}</p>
+      </Card>
+    </div>
+  );
 }
